@@ -330,6 +330,7 @@ class AwqQuantizer:
             x_sum += chunk_sum.to(inp.device)
 
         x_mean = (x_sum / num_elements).to(inp.dtype) # torch.Size([11008])
+        # x_mean is the same as inp_flat.mean(dim=0)
         clear_memory(x_sum)
 
         # [STEP 3]: Compute output of module
@@ -340,11 +341,15 @@ class AwqQuantizer:
         # [STEP 4]: Compute loss
         best_scales = self._compute_best_scale(
             inp, w_mean, x_mean, module2inspect, layers, fp16_output, module_kwargs
+            # inp: torch.Size([65, 512, 11008])
+            # w_mean: torch.Size([11008])
+            # x_mean: torch.Size([11008])
+            # fp16_output: torch.Size([65, 512, 4096])
         )
 
         return (
-            get_op_name(module, prev_op),
-            tuple([get_op_name(module, m) for m in layers]),
+            get_op_name(module, prev_op), # up_proj
+            tuple([get_op_name(module, m) for m in layers]), # [down_proj]
             best_scales,
         )
 
