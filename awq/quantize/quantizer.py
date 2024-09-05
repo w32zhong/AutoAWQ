@@ -321,9 +321,6 @@ class AwqQuantizer:
         # Use float32 for sum calculation
         x_sum = torch.zeros(num_channels, dtype=torch.float32, device=inp.device)
 
-        #if idx == 3: breakpoint()
-        #else: print(idx)
-
         for i in range(0, num_elements, chunk_size):
             end = min(i + chunk_size, num_elements)
             chunk_sum = inp_flat[i:end].to(torch.float32).sum(dim=0) # torch.Size([11008])
@@ -340,7 +337,7 @@ class AwqQuantizer:
 
         # [STEP 4]: Compute loss
         best_scales = self._compute_best_scale(
-            inp, w_mean, x_mean, module2inspect, layers, fp16_output, module_kwargs
+            idx, inp, w_mean, x_mean, module2inspect, layers, fp16_output, module_kwargs
             # inp: torch.Size([65, 512, 11008])
             # w_mean: torch.Size([11008])
             # x_mean: torch.Size([11008])
@@ -354,7 +351,7 @@ class AwqQuantizer:
         )
 
     def _compute_best_scale(
-        self,
+        self, idx,
         x: torch.Tensor,
         w_mean: torch.Tensor,
         x_mean: torch.Tensor,
@@ -403,6 +400,10 @@ class AwqQuantizer:
             # Q(W * s)
             for fc in linears2scale:
                 fc.weight.mul_(scales_view)
+
+                #if idx == 3 and ratio == 2: breakpoint()
+                #else: print(idx)
+
                 fc.weight.data = (
                     self.pseudo_quantize_tensor(fc.weight.data)[0] / scales_view
                 )
@@ -418,14 +419,14 @@ class AwqQuantizer:
                 best_error = loss
                 best_ratio = ratio
                 best_scales = scales.clone()
-            module2inspect.load_state_dict(org_sd)
+
+            module2inspect.load_state_dict(org_sd) # restore after modify fc.weight
 
         if best_ratio == -1:
             logging.debug(history)
             raise Exception
 
         assert torch.isnan(best_scales).sum() == 0, best_scales
-
         return best_scales.detach().cpu()
 
     @torch.no_grad()
