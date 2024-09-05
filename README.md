@@ -18,8 +18,13 @@ graph TD;
     AwqQuantizer.quantize --> _get_input_feat__call --> _get_input_feat --> hook_sublayers --> _module_forward 
     _get_input_feat__call["input_feat = self._get_input_feat(modules[i])"]
     _get_input_feat[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L609">AwqQuantizer._get_input_feat</a>]
-    hook_sublayers["hook feat_dict[path].append(layer inputs) in each of named_linears / sublayers"]
+    hook_sublayers["hook input_feat[path].append(layer inputs) in each of named_linears / sublayers"]
     _module_forward["self.inps = self._module_forward(self.inps, module[i])"]
+
+    AwqQuantizer.quantize --> step2
+    AwqQuantizer.quantize --> step3
+    step2[Compute and apply scale list]
+    step3[Compute and apply clipping list]
 ```
 
 # AutoAWQ
