@@ -167,6 +167,10 @@ class AwqQuantizer:
                 self._search_best_scale(self.modules[i], **layer)
                 for layer in module_config
             ]
+            # p module_config[3]['inp'].shape
+            # torch.Size([65, 512, 11008])
+            # p scales_list[3]
+            # mlp.up_proj, [mlp.down_proj], Tensor of torch.Size([11008])
             apply_scale(self.modules[i], scales_list, input_feat_dict=input_feat)
             scales_list = append_str_prefix(
                 scales_list, get_op_name(self.model, self.modules[i]) + "."
