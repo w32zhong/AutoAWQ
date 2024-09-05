@@ -164,9 +164,12 @@ class AwqQuantizer:
                 self.modules[i], input_feat, self.module_kwargs
             )
             scales_list = [
-                self._search_best_scale(self.modules[i], **layer)
-                for layer in module_config
+                self._search_best_scale(idx, self.modules[i], **layer)
+                for idx, layer in enumerate(module_config)
             ]
+            # for down_proj layer (idx=3):
+            # p module_config[3]['prev_op']
+            # Linear(in_features=4096, out_features=11008, bias=False)
             # p module_config[3]['inp'].shape
             # torch.Size([65, 512, 11008])
             # p scales_list[3]
@@ -271,6 +274,7 @@ class AwqQuantizer:
     @torch.no_grad()
     def _search_best_scale(
         self,
+        idx,
         module,
         prev_op,
         layers: List[nn.Linear],
@@ -291,7 +295,7 @@ class AwqQuantizer:
         # [STEP 1]: Compute per-channel mean of normalised weights
         # All layer weights are concatted together
         weight = torch.cat([_m.weight for _m in layers], dim=0)
-        org_shape = weight.shape
+        org_shape = weight.shape # e.g., down_proj (out_features=4096, in_features=11008)
         # The weights are reshaped to be organised by quantization group
         weight = weight.view(-1, self.group_size)
         # Calculates the relative magnitude of the weights within each of the quantization groups,
@@ -300,7 +304,7 @@ class AwqQuantizer:
         # Resizes the rescaled weight matrix back up to its original dimensions
         w_scale = w_scale.view(org_shape)
         # Gets the average rescaled magnitude for each output channel
-        w_mean = w_scale.mean(0)
+        w_mean = w_scale.mean(0) # torch.Size([-1, 4096]) --> torch.Size([4096])
         clear_memory(weight)
 
         # [STEP 2]: Compute per-channel mean of the input activation with chunking
