@@ -1,3 +1,14 @@
+# Notes
+```mermaid
+graph TD;
+    BaseAWQForCausalLM[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/models/base.py#L89">BaseAWQForCausalLM</a>]
+    LlamaAWQForCausalLM[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/models/llama.py#L14">LlamaAWQForCausalLM</a>]
+    BaseAWQForCausalLM -->|example| LlamaAWQForCausalLM
+    BaseAWQForCausalLM_quantize[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/models/base.py#L129">BaseAWQForCausalLM.quantize</a>]
+    BaseAWQForCausalLM --> BaseAWQForCausalLM_quantize --> AwqQuantizer_quantize
+    AwqQuantizer_quantize[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L27">AwqQuantizer.quantize</a>]
+```
+
 # AutoAWQ
 
 <p align="center">
