@@ -29,8 +29,8 @@ graph TD;
     step2["(step2) Compute and apply scale list"]
     step3["(step3) Compute and apply clipping list"]
 
-    step2 --> get_layers_for_scaling --> _search_best_scale_call --> apply_scale
-    get_layers_for_scaling["module_config = self.awq_model.get_layers_for_scaling(modules[i], input_feat)"]
+    step2 --> get_layers_for_scaling_call --> _search_best_scale_call --> apply_scale
+    get_layers_for_scaling_call["module_config = self.awq_model.get_layers_for_scaling(modules[i], input_feat)"]
     _search_best_scale_call["scales_list = self._search_best_scale() for each sublayer of modules[i]"]
 ```
 
