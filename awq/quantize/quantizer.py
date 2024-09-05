@@ -543,43 +543,39 @@ class AwqQuantizer:
         modules[0] = modules[0].to(best_device)
         self.awq_model.move_embed(self.model, best_device)
 
-        # get input and kwargs to layer 0
-        # with_kwargs is only supported in PyTorch 2.0
-        # use this Catcher hack for now
-        class Catcher(nn.Module):
-            def __init__(self, module):
-                super().__init__()
-                self.module = module
+        def forward_catch(*args, **kwargs):
+            # assume first input to forward is hidden states
+            if len(args) > 0:
+                hidden_states = args[0]
+                del args
+            else:
+                first_key = list(kwargs.keys())[0]
+                hidden_states = kwargs.pop(first_key)
 
-            def forward(self, *args, **kwargs):
-                # assume first input to forward is hidden states
-                if len(args) > 0:
-                    hidden_states = args[0]
-                    del args
-                else:
-                    first_key = list(kwargs.keys())[0]
-                    hidden_states = kwargs.pop(first_key)
-
-                inps.append(hidden_states)
-                layer_kwargs.update(kwargs)
-                raise ValueError  # early exit to break later inference
+            inps.append(hidden_states)
+            layer_kwargs.update(kwargs)
+            raise ValueError  # early exit to break later inference
 
         # patch layer 0 to catch input and kwargs
-        modules[0] = Catcher(modules[0])
+        save = modules[0].forward
+        modules[0].forward = forward_catch
         try:
             self.model(samples.to(next(self.model.parameters()).device))
         except ValueError:  # work with early exit
             pass
-        modules[0] = modules[0].module  # restore
+        modules[0].forward = save  # restore
 
-        # Update the layer kwargs with `prepare_inputs_for_generation` method
-        # that takes care of everything to avoid unexpected errors.
-        layer_kwargs = self.model.prepare_inputs_for_generation(samples, **layer_kwargs)
-        # Pop the input_ids as they are not needed at all.
-        layer_kwargs.pop("input_ids")
+        if hasattr(self.model, 'prepare_inputs_for_generation'):
+            # Update the layer kwargs with `prepare_inputs_for_generation` method
+            # that takes care of everything to avoid unexpected errors.
+            layer_kwargs = self.model.prepare_inputs_for_generation(samples, **layer_kwargs)
+            # Pop the input_ids as they are not needed at all.
+            layer_kwargs.pop("input_ids")
 
+        print(samples.shape) # torch.Size([65, 512])
         del samples
         inps = inps[0]
+        print(inps.shape) # torch.Size([65, 512, 4096])
 
         modules[0] = modules[0].cpu()
         self.awq_model.move_embed(self.model, "cpu")
