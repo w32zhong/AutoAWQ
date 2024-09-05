@@ -8,7 +8,10 @@ graph TD;
     BaseAWQForCausalLM --> BaseAWQForCausalLM_quantize --> AwqQuantizer_quantize
     AwqQuantizer_quantize[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L27">AwqQuantizer.quantize</a>]
     AwqQuantizer_quantize -->|init| AwqQuantizer.init_quant
-    AwqQuantizer.init_quant[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L544">BaseAWQForCausalLM.quantize</a>]
+    AwqQuantizer.init_quant[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L544">AwqQuantizer.quantize</a>]
+    AwqQuantizer.init_quant --> get_model_layers__call --> first_inp
+    get_model_layers__call[modules = self.awq_model.get_model_layers]
+    first_inp["inps = catch modules[0].forward().inputs"]
 ```
 
 # AutoAWQ
