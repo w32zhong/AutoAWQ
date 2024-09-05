@@ -7,6 +7,8 @@ graph TD;
     BaseAWQForCausalLM_quantize[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/models/base.py#L129">BaseAWQForCausalLM.quantize</a>]
     BaseAWQForCausalLM --> BaseAWQForCausalLM_quantize --> AwqQuantizer_quantize
     AwqQuantizer_quantize[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L27">AwqQuantizer.quantize</a>]
+    AwqQuantizer_quantize -->|init| AwqQuantizer.init_quant
+    AwqQuantizer.init_quant[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L544">BaseAWQForCausalLM.quantize</a>]
 ```
 
 # AutoAWQ
