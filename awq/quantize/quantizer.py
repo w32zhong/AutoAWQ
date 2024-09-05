@@ -304,12 +304,12 @@ class AwqQuantizer:
         # Resizes the rescaled weight matrix back up to its original dimensions
         w_scale = w_scale.view(org_shape)
         # Gets the average rescaled magnitude for each output channel
-        w_mean = w_scale.mean(0) # torch.Size([-1, 4096]) --> torch.Size([4096])
+        w_mean = w_scale.mean(0) # torch.Size([-1, 11008]) --> torch.Size([11008])
         clear_memory(weight)
 
         # [STEP 2]: Compute per-channel mean of the input activation with chunking
         # move inp to cpu to avoid memory leak
-        inp_flat = inp.cpu().abs().view(-1, inp.shape[-1])
+        inp_flat = inp.cpu().abs().view(-1, inp.shape[-1]) # abs [-1, 11008]
         num_elements = inp_flat.size(0)
         num_channels = inp_flat.size(1)
         element_size_bytes = inp_flat.element_size() * 2 # multiplied by 2 for FP32
@@ -320,13 +320,16 @@ class AwqQuantizer:
 
         # Use float32 for sum calculation
         x_sum = torch.zeros(num_channels, dtype=torch.float32, device=inp.device)
-        
+
+        #if idx == 3: breakpoint()
+        #else: print(idx)
+
         for i in range(0, num_elements, chunk_size):
             end = min(i + chunk_size, num_elements)
-            chunk_sum = inp_flat[i:end].to(torch.float32).sum(dim=0)
+            chunk_sum = inp_flat[i:end].to(torch.float32).sum(dim=0) # torch.Size([11008])
             x_sum += chunk_sum.to(inp.device)
 
-        x_mean = (x_sum / num_elements).to(inp.dtype)
+        x_mean = (x_sum / num_elements).to(inp.dtype) # torch.Size([11008])
         clear_memory(x_sum)
 
         # [STEP 3]: Compute output of module
