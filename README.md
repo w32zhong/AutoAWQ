@@ -32,6 +32,9 @@ graph TD;
     step2 --> get_layers_for_scaling_call --> _search_best_scale_call --> apply_scale
     get_layers_for_scaling_call["module_config = self.awq_model.get_layers_for_scaling(modules[i], input_feat)"]
     _search_best_scale_call["scales_list = self._search_best_scale() for each sublayer of modules[i]"]
+
+    _search_best_scale[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L275">AwqQuantizer._search_best_scale</a>]
+    get_layers_for_scaling_call --> _search_best_scale
 ```
 
 # AutoAWQ
