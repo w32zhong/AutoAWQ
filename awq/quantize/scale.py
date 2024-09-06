@@ -146,7 +146,7 @@ def scale_fc_fcs(fc1: nn.Linear, fcs: List[nn.Linear], scales: torch.Tensor):
         fc.weight.mul_(scales.view(1, -1))
 
     # prev layer: torch.Size([11008, 4096]) / torch.Size([11008, 1])
-    # next layer: torch.Size([4096, 11008]) * torch.Size([11008, 1])
+    # this layer: torch.Size([4096, 11008]) * torch.Size([11008, 1])
     #print(fc1.weight.shape, fcs[0].weight.shape, scales.shape)
     #
     # Example
