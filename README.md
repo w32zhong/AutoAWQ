@@ -35,6 +35,8 @@ graph TD;
 
     _search_best_scale[<a href="https://github.com/w32zhong/AutoAWQ/blob/1c5787f5c44acc2753c0e30e4b59412343cb4a71/awq/quantize/quantizer.py#L275">AwqQuantizer._search_best_scale</a>]
     _search_best_scale_call --> _search_best_scale
+
+    apply_scale --> _apply_quant
 ```
 
 # AutoAWQ
