@@ -145,6 +145,18 @@ def scale_fc_fcs(fc1: nn.Linear, fcs: List[nn.Linear], scales: torch.Tensor):
     for fc in fcs:
         fc.weight.mul_(scales.view(1, -1))
 
+    # prev layer: torch.Size([11008, 4096]) / torch.Size([11008, 1])
+    # next layer: torch.Size([4096, 11008]) * torch.Size([11008, 1])
+    #print(fc1.weight.shape, fcs[0].weight.shape, scales.shape)
+    #
+    # Example
+    # !exp_fc1 = torch.randint(10,(4,3))
+    # !exp_fc  = torch.randint(10,(3,4))
+    # !exp_scales = torch.randint(10,(4,))
+    # p exp_fc1.div(exp_scales.view(-1, 1))
+    # p exp_fc.mul(exp_scales.view(1, -1))
+    #breakpoint()
+
     for p in fc1.parameters():
         assert torch.isnan(p).sum() == 0
     for fc in fcs:
