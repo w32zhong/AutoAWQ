@@ -185,6 +185,7 @@ class BaseAWQForCausalLM(nn.Module):
         ] = 1024
         * 1024
         * 1024,
+        init_only=False
     ):
         """
         The main quantization function that you can use to quantize your model.
@@ -227,10 +228,12 @@ class BaseAWQForCausalLM(nn.Module):
             max_calib_samples=max_calib_samples,
             max_calib_seq_len=max_calib_seq_len,
             max_chunk_memory=max_chunk_memory,
+            init_only=init_only
         )
-        self.quantizer.quantize()
 
-        self.is_quantized = True
+        if not init_only:
+            self.quantizer.quantize()
+            self.is_quantized = True
 
     @torch.no_grad()
     def pack(self):

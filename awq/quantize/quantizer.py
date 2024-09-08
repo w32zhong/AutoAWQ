@@ -45,6 +45,7 @@ class AwqQuantizer:
         max_calib_samples=128,
         max_calib_seq_len=512,
         max_chunk_memory=1024 * 1024 * 1024,
+        init_only=False
     ) -> None:
         self.awq_model = awq_model
         self.model = model
@@ -66,9 +67,12 @@ class AwqQuantizer:
         self.modules_to_not_convert = (
             modules_to_not_convert if modules_to_not_convert is not None else []
         )
-        self.modules, self.module_kwargs, self.inps = self.init_quant(
-            n_samples=self.max_calib_samples, max_seq_len=self.max_calib_seq_len
-        )
+        if not init_only:
+            self.modules, self.module_kwargs, self.inps = self.init_quant(
+                n_samples=self.max_calib_samples, max_seq_len=self.max_calib_seq_len
+            )
+        else:
+            self.modules, self.module_kwargs = [], {}
 
     def pseudo_quantize_tensor(self, w: torch.Tensor):
         org_w_shape = w.shape
