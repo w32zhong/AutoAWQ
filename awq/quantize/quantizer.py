@@ -171,6 +171,7 @@ class AwqQuantizer:
                 self._search_best_scale(idx, self.modules[i], **layer)
                 for idx, layer in enumerate(module_config)
             ]
+
             # for down_proj layer (idx=3):
             # p module_config[3]['prev_op']
             # Linear(in_features=4096, out_features=11008, bias=False)
@@ -350,7 +351,7 @@ class AwqQuantizer:
         )
 
         return (
-            get_op_name(module, prev_op), # up_proj
+            None if prev_op is None else get_op_name(module, prev_op), # up_proj
             tuple([get_op_name(module, m) for m in layers]), # [down_proj]
             best_scales,
         )
