@@ -86,11 +86,11 @@ def compute_memory_used_pct(device):
     return memory_pct
 
 
-def get_best_device():
+def get_best_device(n=0):
     if torch.backends.mps.is_available():
         return "mps"
     elif torch.cuda.is_available():
-        return "cuda:0"
+        return f"cuda:{n}"
     else:
         return "cpu"
 

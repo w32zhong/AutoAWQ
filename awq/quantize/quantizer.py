@@ -469,18 +469,31 @@ class AwqQuantizer:
     def _search_best_clip(self, layer, named_linears, input_feat):
         clip_list = []
         avoid_clipping = ["q_", "k_", "query", "key", "Wqkv"]
+        # left over:
+        #
+        # self_attn.v_proj
+        # self_attn.o_proj
+        # mlp.gate_proj
+        # mlp.up_proj
+        # mlp.down_proj
+        # E
 
         for name in named_linears:
             # due to qk bmm, it is hard to clip precisely
             if any([_ in name for _ in avoid_clipping]):
                 continue
-
-            named_linears[name].to(get_best_device())
+            best_dev = get_best_device(1)
+            print('search clip for', name,
+                named_linears[name].weight.shape, f'(dev={best_dev})')
+            named_linears[name].to(best_dev)
             max_val = self._compute_best_clip(
                 named_linears[name].weight, input_feat[name]
-            )
+            ).cpu()
+            # for self_attn.v_proj of torch.Size([4096, 4096]), max_val.shape
+            # is torch.Size([4096, 32, 1]) where 32 = 4096 / 128.
             clip_list.append((name, max_val))
             named_linears[name].cpu()
+            clear_memory()
 
         return clip_list
 
