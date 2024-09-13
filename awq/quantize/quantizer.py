@@ -482,7 +482,7 @@ class AwqQuantizer:
             # due to qk bmm, it is hard to clip precisely
             if any([_ in name for _ in avoid_clipping]):
                 continue
-            best_dev = get_best_device(1)
+            best_dev = get_best_device()
             print('search clip for', name,
                 named_linears[name].weight.shape, f'(dev={best_dev})')
             named_linears[name].to(best_dev)
@@ -520,7 +520,8 @@ class AwqQuantizer:
         
         w = w.reshape(org_w_shape[0], 1, -1, group_size)
 
-        oc_batch_size = 256 if org_w_shape[0] % 256 == 0 else 64  # prevent OOM
+        #oc_batch_size = 256
+        oc_batch_size = 64 # prevent OOM
         assert org_w_shape[0] % oc_batch_size == 0
         w_all = w
         best_max_val_all = []
