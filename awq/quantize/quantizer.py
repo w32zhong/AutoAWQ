@@ -254,7 +254,7 @@ class AwqQuantizer:
     def _module_forward(
         self, x: torch.Tensor, module: torch.nn.Module, module_kwargs: Dict
     ) -> torch.Tensor:
-        print('_module_forward', module.idx if hasattr(module, 'idx') else -1, module)
+        #print('_module_forward', module.idx if hasattr(module, 'idx') else -1, module)
         if self.n_parallel_calib_samples is None:
             # runs through all samples at once
             module_output = module(x, **module_kwargs)
@@ -294,6 +294,8 @@ class AwqQuantizer:
 
         if "use_cache" in kwargs:
             kwargs.pop("use_cache")
+
+        print('search best scales...', module2inspect)
 
         # Put x on the right device
         inp = inp.to(next(module2inspect.parameters()).device)
@@ -388,7 +390,7 @@ class AwqQuantizer:
         w_mean = w_mean.view(-1).to(device)
 
         for ratio in range(n_grid):
-            print(ratio, n_grid)
+            #print(ratio, n_grid)
 
             # create new scales
             ratio = ratio / n_grid
@@ -662,7 +664,7 @@ class AwqQuantizer:
         module_kwargs = self._sanitize_kwargs(self.module_kwargs, layer)
 
         self.inps = self._module_forward(self.inps, layer, module_kwargs)
-        print('updated self.inps')
+        #print('updated self.inps')
         for h in handles:
             h.remove()
         # now solve for scaling and clipping
