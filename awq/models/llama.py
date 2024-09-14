@@ -22,6 +22,7 @@ class LlamaAWQForCausalLM(BaseAWQForCausalLM):
 
     @staticmethod
     def get_model_layers(model: OldLlamaForCausalLM):
+        #return [model.model.layers[0]]
         return model.model.layers
 
     @staticmethod
