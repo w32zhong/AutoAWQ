@@ -428,6 +428,7 @@ class AwqQuantizer:
 
             module2inspect.load_state_dict(org_sd) # restore after modify fc.weight
 
+        print(f'best ratio={best_ratio}, loss={best_error}')
         if best_ratio == -1:
             logging.debug(history)
             raise Exception
