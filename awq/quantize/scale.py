@@ -59,7 +59,24 @@ def apply_scale(module, scales_list, input_feat_dict=None):
             any(isinstance(prev_op, t) for t in allowed_norms)
             or "rmsnorm" in str(prev_op.__class__).lower()
         ):
+            ### DEBUG ###
+            #assert layer_names[0] == 'self_attn.q_proj'
+            #test_inp = torch.randn_like(input_feat_dict['self_attn.q_proj'])
+
+            #after_norm = prev_op(test_inp)
+            #after_proj = layers[0](after_norm)
+            #print(after_proj)
+            ###  END  ###
+
             scale_ln_fcs(prev_op, layers, scales)
+
+            ### DEBUG ###
+            #assert layer_names[0] == 'self_attn.q_proj'
+            #after_norm = prev_op(test_inp)
+            #after_proj = layers[0](after_norm)
+            #print(after_proj)
+            #breakpoint()
+            ###  END  ###
 
         elif any(isinstance(prev_op, t) for t in allowed_act_fns):
             new_module = ScaledActivation(prev_op, scales)
