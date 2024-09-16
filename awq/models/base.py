@@ -686,6 +686,11 @@ class BaseAWQForCausalLM(nn.Module):
                 torch.cuda.empty_cache()
             gc.collect()
 
+
+    @staticmethod
+    def get_act_for_scaling(module):
+        return dict(is_scalable=False)
+
     @staticmethod
     def _scale_activations(self, layer):
         scale_dict = self.get_act_for_scaling(layer)
