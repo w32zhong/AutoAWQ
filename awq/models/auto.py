@@ -23,15 +23,15 @@ AWQ_CAUSAL_LM_MODEL_MAP = {
     "qwen": QwenAWQForCausalLM,
     "baichuan": BaichuanAWQForCausalLM,
     "llava": LlavaAWQForCausalLM,
-    "qwen2": Qwen2AWQForCausalLM,
-    "gemma": GemmaAWQForCausalLM,
-    "stablelm": StableLmAWQForCausalLM,
+    #"qwen2": Qwen2AWQForCausalLM,
+    #"gemma": GemmaAWQForCausalLM,
+    #"stablelm": StableLmAWQForCausalLM,
     #"starcoder2": Starcoder2AWQForCausalLM,
     #"llava_next": LlavaNextAWQForCausalLM,
     #"phi3": Phi3AWQForCausalLM,
     #"cohere": CohereAWQForCausalLM,
-    "deepseek_v2": DeepseekV2AWQForCausalLM,
-    "minicpm": MiniCPMAWQForCausalLM,
+    #"deepseek_v2": DeepseekV2AWQForCausalLM,
+    #"minicpm": MiniCPMAWQForCausalLM,
 }
 
 

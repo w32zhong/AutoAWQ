@@ -4,15 +4,15 @@ from typing import Tuple, List
 from awq.utils.utils import get_best_device
 from awq.modules.act import ScaledActivation
 from awq.utils.module import get_op_by_name, set_op_by_name
-from transformers.models.bloom.modeling_bloom import BloomGelu
+#from transformers.models.bloom.modeling_bloom import BloomGelu
 from transformers.models.llama.modeling_llama import LlamaRMSNorm
-from transformers.models.gemma.modeling_gemma import GemmaRMSNorm
+#from transformers.models.gemma.modeling_gemma import GemmaRMSNorm
 from transformers.activations import NewGELUActivation, PytorchGELUTanh, GELUActivation
 
-allowed_norms = [nn.LayerNorm, LlamaRMSNorm, GemmaRMSNorm]
+allowed_norms = [nn.LayerNorm, LlamaRMSNorm] #, GemmaRMSNorm]
 allowed_act_fns = [
     nn.GELU,
-    BloomGelu,
+    #BloomGelu,
     NewGELUActivation,
     PytorchGELUTanh,
     GELUActivation,
@@ -108,7 +108,7 @@ def scale_ln_fcs(ln: nn.Linear, fcs: List[nn.Linear], scales: torch.Tensor):
 
     # GemmaRMSNorm is different from Llama's in that it multiplies
     # (1 + weight) to the output, instead of just weight.
-    if isinstance(ln, GemmaRMSNorm):
+    if False and isinstance(ln, GemmaRMSNorm):
         ln.weight += 1
         ln.weight.div_(scales)
         ln.weight -= 1
